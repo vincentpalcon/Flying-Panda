@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Flying Panda v1.0</title>
+        <link rel="stylesheet" href="css/reset.css" type="text/css">
+        <link rel="stylesheet" href="css/main.css" type="text/css">
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<meta name="author" content="Vincent Palcon">
+        <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0" />
+		<meta name="msapplication-tap-highlight" content="no"/>
+		<link rel="icon" type="image/png" href="sprites/favicon.png" />
+		<link rel="apple-touch-icon" href="sprites/iphone_icon.png" />
+
+        <script type="text/javascript" src="js/jquery-2.0.3.min.js"></script>
+        <script type="text/javascript" src="js/createjs-2014.03.12.min.js"></script>
+        <script type="text/javascript" src="js/main.js"></script>
+		
+    </head>
+    <body ondragstart="return false;" ondrop="return false;" >
+          <script>
+            $(document).ready(function(){
+                     var oMain = new CMain();
+
+                     $(oMain).on("game_start", function(evt) {
+                             //alert("game_start");
+                     });
+
+                     $(oMain).on("save_score", function(evt,score,best_score) {
+                             //alert("save_score: "+score);
+                     });
+
+                     $(oMain).on("restart", function(evt) {
+                             //alert("restart");
+                     });
+           });
+        </script>
+        <canvas id="canvas" class='ani_hack' width="768" height="1024"> </canvas>
+    </body>
+</html>

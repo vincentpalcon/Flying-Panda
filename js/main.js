@@ -8,8 +8,6 @@
  * Copyright 2014 - http://flyingpanda.vincentpalcon.tk
  * 
  */
-copyright 2014 by Vincent Palcon - Flying Panda v1.0
-****************/
 function CEndPanel(a) {
     var d, b, c, h, g, f, e, l;
     this._init = function (a) {

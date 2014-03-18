@@ -31,10 +31,7 @@ body{
 #canvas{
     width:768px;
     height: 1024px;
-    
     position: absolute;
-    
-    
 }
 
 canvas {
@@ -48,7 +45,7 @@ canvas {
 .ani_hack{
     -webkit-perspective: 1000;
     -webkit-backface-visibility: hidden;
-    
+    display: none;
     -webkit-touch-callout: none;
     -webkit-user-select: none;
     -khtml-user-select: none;
@@ -57,18 +54,4 @@ canvas {
     user-select: none;
     outline: none;
     -webkit-tap-highlight-color: transparent; /* mobile webkit */
-}
-
-/***************FONTS*******************/
-@font-face {
-    font-family: 'TrashHand';
-    src: url('trashhand-webfont.eot');
-    src:url('trashhand.svg#TrashHand') format('svg') ,
-        url('trashhand-webfont.eot?#iefix') format('embedded-opentype'),
-         url('trashhand-webfont.woff') format('woff'),
-         url('trashhand-webfont.ttf') format('truetype')
-         ;
-    font-weight: normal;
-    font-style: normal;
-
 }

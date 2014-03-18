@@ -8,6 +8,23 @@
  * Copyright 2014 - http://flyingpanda.vincentpalcon.tk
  * 
  */
+
+// Splash Screen height auto resize
+$(document).ready(function(){
+ var height = $(window).height();
+
+ if(height < 1100){
+  $('img').css('height', height + 'px');
+ }
+
+ $(window).resize(function(){
+  var height = $(window).height();
+  if(height < 1100){
+   $('img').css('height', height + 'px');
+  }
+ });
+});
+	
 function CEndPanel(a) {
     var d, b, c, h, g, f, e, l;
     this._init = function (a) {
@@ -46,13 +63,15 @@ function CEndPanel(a) {
         s_oStage.addChild(l)
     };
     this.unload = function () {
-        l.off("mousedown", this._onExit);
+        l.off("mousedown", this._onRetry);
         s_oStage.removeChild(l)
     };
+    /* Reload game
     this._initListener = function () {
         l.on("mousedown",
             this._onExit)
     };
+    */
     this.show = function (a, d) {
         createjs.Sound.play("game_over");
         e.text = TEXT_GAMEOVER;
@@ -61,19 +80,48 @@ function CEndPanel(a) {
         c.text = TEXT_SCORE + ": " + a;
         h.text = TEXT_BEST_SCORE + ": " + d;
         g.text = TEXT_BEST_SCORE + ": " + d;
+        
+        var r = s_oSpriteLibrary.getSprite("btn_retry");
+        t = new CTextButton(CANVAS_WIDTH - 525, CANVAS_HEIGHT - 250, r, TEXT_RETRY, "Arial", "#ffffff", 30);
+        t.addEventListener(ON_MOUSE_UP, this._onRetry, this);
+        
+        var w = s_oSpriteLibrary.getSprite("btn_share");
+        q = new CTextButton(CANVAS_WIDTH - 242, CANVAS_HEIGHT - 250, w, TEXT_SHARE, "Arial", "#ffffff", 30);
+        q.addEventListener(ON_MOUSE_UP, this._onShare, this);
+        
+        var u = s_oSpriteLibrary.getSprite("but_exit");
+        i = new CGfxButton(CANVAS_WIDTH - u.width / 2 - 10, 10 + u.height / 2, u, !0);
+        i.addEventListener(ON_MOUSE_UP, this._onExit, this);
+        !1 === s_bMobile && (o = new CToggle(CANVAS_WIDTH - 140, 10 + u.height / 2, s_oSpriteLibrary.getSprite("audio_icon"), s_bAudioActive), o.addEventListener(ON_MOUSE_UP, this._onAudioToggle, this))
+        
         l.visible = !0;
         var m = this;
         createjs.Tween.get(l).to({
             alpha: 1
         }, 500).call(function () {
-            m._initListener()
+            //m._initListener()
         });
         $(s_oMain).trigger("save_score", a, d)
     };
-    this._onExit = function () {
+    this._onRetry = function () {
         l.off("mousedown", this._onExit);
         s_oStage.removeChild(l);
-        s_oGame.onRestartGame()
+        s_oGame.onRestartGame();
+        t.unload();
+        q.unload();
+    
+    };
+    
+    this._onShare = function () {
+    	window.open('https://www.facebook.com/dialog/feed?app_id=1481576815395206&name=Flying%20Panda&picture=http://flyingpanda.vincentpalcon.tk/sprites/favicon.png&display=popup&caption=Based%20on%20addictive%20mobile%20game%20flappy%20bird.%20Help%20Panda%20to%20Fly!%20Dont%20let%20the%20Panda%20fall%20or%20hit%20the%20obstacles!&description=' +  g.text + '&link=http://flyingpanda.vincentpalcon.tk&redirect_uri=http://flyingpanda.vincentpalcon.tk/', '_blank', '');
+  		return false;
+    }
+    this._onAudioToggle = function () {
+        createjs.Sound.setMute(s_bAudioActive);
+        s_bAudioActive = !s_bAudioActive
+    };
+    this._onExit = function () {
+        s_oGame.onExit()
     };
     this._init(a);
     return this
@@ -131,7 +179,7 @@ var CANVAS_WIDTH = 768,
     GAME_STATE_TRAINING = 1,
     GAME_STATE_START = 2,
     GAME_STATE_GAME_OVER = 3,
-    HERO_START_X, HERO_START_Y, HERO_DOWN_ACCELLERATION, BG_SPEED, TIME_TRAINING, DIST_AMONG_OBSTACLES, OBSTACLE_HEIGHT_DIST, TOLERANCE_NEXT_OBST_HEIGHT = 100;
+    HERO_START_X, HERO_START_Y, HERO_DOWN_ACCELLERATION, BG_SPEED, TIME_TRAINING, DIST_AMONG_OBSTACLES, OBSTACLE_HEIGHT_DIST, TOLERANCE_NEXT_OBST_HEIGHT = 120;
 
 function CToggle(a, d, b, c) {
     var h, g, f, e;
@@ -535,6 +583,7 @@ function CObstacle(a) {
             f[k + 1].x -= d;
             if (this._checkCollision(b, k) || this._checkCollision(b, k + 1)) {
                 s_oGame.collisionFound();
+                createjs.Sound.play("knock");
                 break
             }
             g !== k && f[k].x < HERO_START_X && (g = k,
@@ -550,8 +599,13 @@ function CMenu() {
         a = new createjs.Bitmap(s_oSpriteLibrary.getSprite("bg_menu"));
         s_oStage.addChild(a);
         var h = s_oSpriteLibrary.getSprite("but_play");
-        d = new CTextButton(CANVAS_WIDTH / 2, CANVAS_HEIGHT - 150, h, TEXT_PLAY, "Arial", "#ffffff", 50);
+        d = new CTextButton(CANVAS_WIDTH / 2, CANVAS_HEIGHT - 250, h, TEXT_PLAY, "Arial", "#ffffff", 50);
         d.addEventListener(ON_MOUSE_UP, this._onButPlayRelease, this);
+        
+        var j = s_oSpriteLibrary.getSprite("but_play_small");
+        f = new CTextButton(CANVAS_WIDTH / 2, CANVAS_HEIGHT - 150, j, TEXT_CREDITS, "Arial", "#ffffff", 30);
+        f.addEventListener(ON_MOUSE_UP, this._onCredits, this);
+        
         !1 === s_bMobile && (b = new CToggle(CANVAS_WIDTH - 60, 60, s_oSpriteLibrary.getSprite("audio_icon"), s_bAudioActive), b.addEventListener(ON_MOUSE_UP, this._onAudioToggle, this));
         c = new createjs.Shape;
         c.graphics.beginFill("black").drawRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
@@ -569,6 +623,97 @@ function CMenu() {
         s_oStage.removeChild(a);
         a = null
     };
+    this._onCredits = function () {
+    	
+    	c = new createjs.Shape;
+    	c.graphics.beginFill("black").drawRect(340, 0, 768, 1024, CANVAS_WIDTH, CANVAS_HEIGHT);
+    	c.y = 0;
+        c.x = 0;
+        c.alpha = 0.90;
+        g = new createjs.Bitmap(s_oSpriteLibrary.getSprite("bg_credits"));
+    	g.y = 1200;
+        g.x = 30;
+        
+       
+        
+        
+        
+        s_oStage.addChild(c, g);
+        createjs.Tween.get(c).to({
+            x: c.x - 340
+          }, 450, createjs.Ease.cubicOut)
+        
+        createjs.Tween.get(g).wait(500).to({
+            y: g.y - 1040
+          }, 450, createjs.Ease.cubicOut).call(handleComplete);
+          function handleComplete() {
+       this._onExit = function () {
+    	s_oStage.removeChild(c, g, game_title, game_title2, favicon, game_author, game_author2, game_version, game_version2, game_qa, game_qa2, game_qa_a, game_qa_a2);
+    	r.unload();
+        
+    	};
+    	game_title = new createjs.Text("FLYING PANDA", "bold 52px Arial", "#000000");
+        game_title.y = 202;
+        game_title.x = 190;
+        s_oStage.addChild(game_title);
+        game_title2 = new createjs.Text("FLYING PANDA", "bold 52px Arial", "#FFFFFF");
+        game_title2.y = 200;
+        game_title2.x = 188;
+        s_oStage.addChild(game_title2);
+        
+        favicon = new createjs.Bitmap(s_oSpriteLibrary.getSprite("favicon"));
+        
+    	favicon.y = 270;
+        favicon.x = 250;
+        s_oStage.addChild(favicon);
+        
+        game_author = new createjs.Text("Design and Program by: Vincent Palcon", "normal 28px Arial", "#000000");
+        game_author.y = 550;
+        game_author.x = 68;
+        s_oStage.addChild(game_author);
+        game_author2 = new createjs.Text("Design and Program by: Vincent Palcon", "normal 28px Arial", "#FFFFFF");
+        game_author2.y = 548;
+        game_author2.x = 66;
+        s_oStage.addChild(game_author2);
+        
+        game_version = new createjs.Text("Version: 1.1", "normal 28px Arial", "#000000");
+        game_version.y = 590;
+        game_version.x = 68;
+        s_oStage.addChild(game_version);
+        game_version2 = new createjs.Text("Version: 1.1", "normal 28px Arial", "#FFFFFF");
+        game_version2.y = 588;
+        game_version2.x = 66;
+        s_oStage.addChild(game_version2);
+        
+        game_qa = new createjs.Text("If you have questions about this game, feel free to contact", "normal 22px Arial", "#000000");
+        game_qa.y = 660;
+        game_qa.x = 68;
+        s_oStage.addChild(game_qa);
+        game_qa2 = new createjs.Text("If you have questions about this game, feel free to contact", "normal 22px Arial", "#FFFFFF");
+        game_qa2.y = 658;
+        game_qa2.x = 66;
+        s_oStage.addChild(game_qa2);
+        
+        game_qa_a = new createjs.Text("me at vincentpalcon@gmail.com", "normal 22px Arial", "#000000");
+        game_qa_a.y = 700;
+        game_qa_a.x = 68;
+        s_oStage.addChild(game_qa_a);
+        game_qa_a2 = new createjs.Text("me at vincentpalcon@gmail.com", "normal 22px Arial", "#FFFFFF");
+        game_qa_a2.y = 698;
+        game_qa_a2.x = 66;
+        s_oStage.addChild(game_qa_a2);
+        
+        	
+        var j = s_oSpriteLibrary.getSprite("but_play_small");
+        r = new CTextButton(CANVAS_WIDTH / 2, CANVAS_HEIGHT - 180, j, TEXT_BACK, "Arial", "#ffffff", 30);
+        r.addEventListener(ON_MOUSE_UP, this._onExit, this);
+        
+    }
+  
+    }
+    
+   
+    
     this._onButPlayRelease = function () {
         this.unload();
         s_oMain.gotoGame()
@@ -585,6 +730,12 @@ function CMain() {
         d = 0,
         b = STATE_LOADING,
         c, h;
+    // Show/Hide SplashScreen
+    $(".fade").hide(0).delay(300).fadeIn(3000);
+    $("#SplashScreen").show().delay(2500).fadeOut(3000, function() {
+    // Show Main Game
+    $("#canvas").hide(0).delay(100).fadeIn(3000);
+		
     this.initContainer = function () {
         var a = document.getElementById("canvas");
         s_oStage = new createjs.Stage(a);
@@ -601,24 +752,34 @@ function CMain() {
         !1 === s_bMobile &&
             this._initSounds();
         this._loadImages()
+        
+
     };
+    
     this.soundLoaded = function () {
         a++;
-        a === d && (c.unload(), !1 === s_bMobile && (s_oSoundTrackSnd = createjs.Sound.play("soundtrack", {
+       a === d && (c.unload(), !1 === s_bMobile && (s_oSoundTrackSnd = createjs.Sound.play("soundtrack", {
+       //a === d && (c.unload(), !1 === s_bMobile, {
             interrupt: createjs.Sound.INTERRUPT_ANY,
             loop: -1,
             volume: 0.5
         })), this.gotoMenu())
     };
+    
     this._initSounds = function () {
         createjs.Sound.initializeDefaultPlugins() && (createjs.Sound.alternateExtensions = ["ogg"], createjs.Sound.addEventListener("fileload", createjs.proxy(this.soundLoaded, this)), createjs.Sound.registerSound("./sounds/soundtrack.mp3", "soundtrack"),
-            createjs.Sound.registerSound("./sounds/game_over.mp3", "game_over"), createjs.Sound.registerSound("./sounds/tap.mp3", "tap"), d += 3)
+            createjs.Sound.registerSound("./sounds/game_over.mp3", "game_over"), createjs.Sound.registerSound("./sounds/knock.mp3", "knock"), createjs.Sound.registerSound("./sounds/tap.mp3", "tap"), createjs.Sound.registerSound("./sounds/score.mp3", "score"), d += 5)
     };
     this._loadImages = function () {
         s_oSpriteLibrary.init(this._onImagesLoaded, this._onAllImagesLoaded, this);
         s_oSpriteLibrary.addSprite("but_play", "./sprites/but_play.png");
+        s_oSpriteLibrary.addSprite("but_play_small", "./sprites/but_play_small.png");
         s_oSpriteLibrary.addSprite("but_exit", "./sprites/but_exit.png");
+        s_oSpriteLibrary.addSprite("btn_retry", "./sprites/btn_retry.png");
+        s_oSpriteLibrary.addSprite("btn_share", "./sprites/btn_share.png");
         s_oSpriteLibrary.addSprite("bg_menu", "./sprites/bg_menu.jpg");
+        s_oSpriteLibrary.addSprite("bg_credits", "./sprites/bg_credits.png");
+        s_oSpriteLibrary.addSprite("favicon", "./sprites/favicon.png");
         s_oSpriteLibrary.addSprite("bg_game", "./sprites/bg_game.jpg");
         s_oSpriteLibrary.addSprite("msg_box",
             "./sprites/msg_box.png");
@@ -633,7 +794,9 @@ function CMain() {
     this._onImagesLoaded = function () {
         a++;
         c.refreshLoader(Math.floor(a / d * 100));
+        
         a === d && (c.unload(), !1 === s_bMobile && (s_oSoundTrackSnd = createjs.Sound.play("soundtrack", {
+        //a === d && (c.unload(), !1 === s_bMobile, {
             interrupt: createjs.Sound.INTERRUPT_ANY,
             loop: -1,
             volume: 0.5
@@ -676,6 +839,8 @@ function CMain() {
     };
     s_oMain = this;
     this.initContainer()
+    });
+
 }
 var s_bMobile, s_bAudioActive = !0,
     s_iCntTime = 0,
@@ -690,6 +855,11 @@ TEXT_SCORE = "SCORE";
 TEXT_BEST_SCORE = "BEST SCORE";
 TEXT_TIME = "TIME";
 TEXT_PLAY = "PLAY";
+TEXT_CREDITS = "CREDITS";
+TEXT_BACK = "BACK";
+TEXT_RETRY = "RETRY";
+TEXT_SHARE = "SHARE";
+TEXT_APPNAME = "Flying Panda";
 TEXT_HELP = "TAP THE SCREEN\n TO FLY THE\n PANDA AND \nAVOID THE WOODS";
 
 function CInterface() {
@@ -699,7 +869,7 @@ function CInterface() {
         c = new createjs.Text(TEXT_SCORE + ": 0", "bold 42px Arial", "#000000");
         c.y = 42;
         s_oStage.addChild(c);
-        h = new createjs.Text(TEXT_SCORE + ": 0", "bold 42px Arial", "#07a800");
+        h = new createjs.Text(TEXT_SCORE + ": 0", "bold 42px Arial", "#FF0000");
         h.y = 40;
         s_oStage.addChild(h);
         c.x = CANVAS_WIDTH / 2 + 2;
@@ -794,6 +964,7 @@ function CHero(a, d, b) {
                 rotation: e.rotation + 0
             }, 450);
             g = 8 * -HERO_DOWN_ACCELLERATION
+            
     };
     this.getBottom = function () {
         return e.y + f
@@ -947,6 +1118,7 @@ function CGame(a) {
     this.increaseScore = function () {
         c++;
         p.refreshScore(c)
+        createjs.Sound.play("score");
     };
     this._gameOver = function () {
         b = -1;

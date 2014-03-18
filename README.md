@@ -1,4 +1,4 @@
-Flying-Panda v1.0
+Flying-Panda
 ============
 
 Based on addictive mobile game flappy bird. Help Panda to Fly! Don't let the Panda fall or hit the obstacles!
@@ -17,3 +17,7 @@ Changelog: 1.1
 - minor text changes (color, size and font)
 - added new sounds (score.mp3, knock.mp3)
 - fixed unknown bugs that cause game to crashed.
+
+Changelog: 1.0
+- Flying Panda release
+
